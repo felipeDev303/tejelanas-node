@@ -1,0 +1,27 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+        <meta name="description" content="Tejidos a mano y con amor. Tejelanas Vivi ofrece una variedad de productos tejidos a mano, ideales para regalar o disfrutar." />
+		<meta name="viewport" content="width=device-width" />
+		<title>{title}</title>
+	</head>
+	<body>
+        <Header />
+        <main>
+		    <slot />
+        </main>
+		<Footer />
+	</body>
+</html>
