@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FaqSection from '../components/FaqSection.jsx';
+---
+<Layout title="Preguntas Frecuentes | Tejelanas Vivi">
+  <main class="container mx-auto max-w-2xl py-12 px-4">
+    <h1 class="text-4xl font-extrabold text-center text-pink-700 mb-8 drop-shadow">Preguntas Frecuentes</h1>
+    <FaqSection client:load />
+    <div class="mt-10 text-center">
+      <a href="/" class="text-pink-700 underline hover:text-pink-800 transition">Volver al inicio</a>
+    </div>
+  </main>
+</Layout>
