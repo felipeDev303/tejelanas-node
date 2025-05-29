@@ -12,13 +12,10 @@ function parseRespuesta(respuesta) {
   );
 
   // Detecta números de WhatsApp chilenos (+56 9 ...)
-  parsed = parsed.replace(
-    /(\+56\s?9\s?\d{4}\s?\d{4})/g,
-    (match) => {
-      const numero = match.replace(/\D/g, "");
-      return `<a href="https://wa.me/${numero}" target="_blank" rel="noopener noreferrer" class="text-green-700 underline">${match}</a>`;
-    }
-  );
+  parsed = parsed.replace(/(\+56\s?9\s?\d{4}\s?\d{4})/g, (match) => {
+    const numero = match.replace(/\D/g, "");
+    return `<a href="https://wa.me/${numero}" target="_blank" rel="noopener noreferrer" class="text-green-700 underline">${match}</a>`;
+  });
 
   return <span dangerouslySetInnerHTML={{ __html: parsed }} />;
 }
