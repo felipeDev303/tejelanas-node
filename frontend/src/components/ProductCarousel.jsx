@@ -1,33 +1,76 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function ProductCarousel() {
   const [products, setProducts] = useState([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const res = await fetch(
-          "https://www.clinicatecnologica.cl/ipss/tejelanasVivi/api/v1/products-services/",
-          {
-            headers: {
-              Authorization: "Bearer ipss.get",
-            },
-          }
-        );
-        const data = await res.json();
-        // Extrae correctamente los productos del JSON anidado
-        setProducts(
-          Array.isArray(data?.data?.productos) ? data.data.productos : []
-        );
-      } catch (e) {
-        setProducts([]);
-      } finally {
-        setLoading(false);
-      }
+    const apiUrl = import.meta.env.PUBLIC_API_URL;
+    const authToken = import.meta.env.PUBLIC_BEARER_TOKEN;
+
+    console.log("Intentando cargar variables de entorno...");
+    console.log("PUBLIC_API_URL:", apiUrl);
+    console.log("PUBLIC_BEARER_TOKEN:", authToken);
+
+    if (!apiUrl || !authToken) {
+      const errMsg =
+        "Variables de entorno PUBLIC_API_URL o PUBLIC_BEARER_TOKEN no definidas. Revisa tu archivo .env y reinicia el servidor de desarrollo.";
+      console.error(errMsg);
+      setError(errMsg);
+      setLoading(false);
+      return;
     }
-    fetchProducts();
+
+    setLoading(true);
+    const fullApiUrl = `${apiUrl}/products-services/`;
+    console.log("Haciendo fetch a:", fullApiUrl);
+
+    fetch(fullApiUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    })
+      .then(async (res) => {
+        console.log("Respuesta recibida, Status:", res.status);
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("Error en la respuesta de la API:", errorText);
+          let errorJson;
+          try {
+            errorJson = JSON.parse(errorText);
+          } catch (e) {}
+          throw new Error(
+            `Error ${res.status}: ${
+              errorJson?.detail || errorJson?.message || res.statusText
+            }. Raw: ${errorText.substring(0, 200)}`
+          );
+        }
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Datos recibidos:", data);
+        // Ajusta según la estructura real de tu API
+        const productos = Array.isArray(data?.data?.productos)
+          ? data.data.productos
+          : [];
+        const servicios = Array.isArray(data?.data?.servicios)
+          ? data.data.servicios
+          : [];
+        setProducts([...productos, ...servicios]);
+        setError("");
+      })
+      .catch((err) => {
+        console.error("Catch - Error al cargar productos:", err);
+        setError("Error al cargar productos: " + err.message);
+        setProducts([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   function prev() {
@@ -38,6 +81,21 @@ export default function ProductCarousel() {
   }
   function goTo(idx) {
     setCurrent(idx);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64 text-gray-500">
+        Cargando productos...
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64 text-red-500">
+        {error}
+      </div>
+    );
   }
 
   return (
@@ -51,11 +109,7 @@ export default function ProductCarousel() {
         if (e.key === "ArrowRight") next();
       }}
     >
-      {loading ? (
-        <div className="flex items-center justify-center h-64 text-gray-500">
-          Cargando productos...
-        </div>
-      ) : products.length === 0 ? (
+      {products.length === 0 ? (
         <div className="flex items-center justify-center h-64 text-gray-500">
           No hay productos para mostrar.
         </div>
