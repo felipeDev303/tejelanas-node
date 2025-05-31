@@ -30,7 +30,7 @@ export default function ContactForm() {
       return;
     }
 
-    // Aquí puedes hacer el fetch a tu backend o servicio de correo
+    // fetch al backend o servicio de correo
     setEnviado(true);
     formRef.current?.reset();
   }
