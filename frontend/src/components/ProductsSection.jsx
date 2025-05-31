@@ -54,7 +54,22 @@ export default function ProductsSection() {
   }, []);
 
   function handleContact(nombre) {
-    window.location.href = `/contacto?producto=${encodeURIComponent(nombre)}`;
+    // Actualiza la URL con el query param y el hash sin recargar la página
+    const url = new URL(window.location.href);
+    url.searchParams.set("producto", nombre);
+    url.hash = "contacto";
+    window.history.pushState({}, "", url);
+
+    // Scroll suave al formulario de contacto
+    const contactoSection = document.getElementById("contacto");
+    if (contactoSection) {
+      contactoSection.scrollIntoView({ behavior: "smooth" });
+    }
+
+    // Dispara un evento personalizado para notificar al formulario
+    window.dispatchEvent(
+      new CustomEvent("producto-interes-cambiado", { detail: nombre })
+    );
   }
 
   return (

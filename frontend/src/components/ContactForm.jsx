@@ -6,6 +6,21 @@ function getQueryParam(name) {
   return params.get(name) || "";
 }
 
+// Escapa caracteres peligrosos para evitar XSS
+function escapeInput(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function isValidEmail(email) {
+  // Regex simple para validar email
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export default function ContactForm() {
   const [producto, setProducto] = useState("");
   const [nombre, setNombre] = useState("");
@@ -13,11 +28,29 @@ export default function ContactForm() {
   const [mensaje, setMensaje] = useState("");
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState("");
+  const [enviando, setEnviando] = useState(false);
   const formRef = useRef(null);
 
+  // Sincroniza el campo producto con el query param de la URL y con el evento personalizado
   useEffect(() => {
-    const productoQS = getQueryParam("producto");
-    if (productoQS) setProducto(productoQS);
+    function syncProductoFromURL() {
+      const productoQS = getQueryParam("producto");
+      setProducto(productoQS || "");
+    }
+
+    // Inicial
+    syncProductoFromURL();
+
+    // Escucha cambios en la URL (navegación pushState/popstate)
+    window.addEventListener("popstate", syncProductoFromURL);
+
+    // Escucha el evento personalizado para cambios inmediatos
+    window.addEventListener("producto-interes-cambiado", syncProductoFromURL);
+
+    return () => {
+      window.removeEventListener("popstate", syncProductoFromURL);
+      window.removeEventListener("producto-interes-cambiado", syncProductoFromURL);
+    };
   }, []);
 
   function handleSubmit(e) {
@@ -25,14 +58,50 @@ export default function ContactForm() {
     setError("");
     setEnviado(false);
 
+    // Validaciones básicas
     if (!nombre || !email || !mensaje) {
       setError("Por favor, completa todos los campos obligatorios.");
       return;
     }
+    if (nombre.length > 80) {
+      setError("El nombre es demasiado largo.");
+      return;
+    }
+    if (email.length > 100) {
+      setError("El email es demasiado largo.");
+      return;
+    }
+    if (!isValidEmail(email)) {
+      setError("El email no es válido.");
+      return;
+    }
+    if (mensaje.length > 1000) {
+      setError("El mensaje es demasiado largo.");
+      return;
+    }
+    if (producto.length > 100) {
+      setError("El producto de interés es demasiado largo.");
+      return;
+    }
 
-    // fetch al backend o servicio de correo
-    setEnviado(true);
-    formRef.current?.reset();
+    setEnviando(true);
+
+    // Simula envío seguro (escapando inputs)
+    const safeNombre = escapeInput(nombre);
+    const safeEmail = escapeInput(email);
+    const safeMensaje = escapeInput(mensaje);
+    const safeProducto = escapeInput(producto);
+
+    // Aquí iría el fetch al backend, usando los valores escapados
+    setTimeout(() => {
+      setEnviando(false);
+      setEnviado(true);
+      setNombre("");
+      setEmail("");
+      setMensaje("");
+      // No limpiamos producto para mantener el valor de interés
+      formRef.current?.reset();
+    }, 1000);
   }
 
   return (
@@ -55,9 +124,12 @@ export default function ContactForm() {
             type="text"
             className="mt-1 p-2 rounded border border-gray-300"
             value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            onChange={(e) => setNombre(e.target.value.replace(/[<>]/g, ""))}
             required
             autoComplete="name"
+            maxLength={80}
+            minLength={2}
+            pattern=".{2,80}"
           />
         </label>
         <label className="flex flex-col font-semibold">
@@ -69,6 +141,8 @@ export default function ContactForm() {
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
+            maxLength={100}
+            pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
           />
         </label>
         <label className="flex flex-col font-semibold">
@@ -77,10 +151,11 @@ export default function ContactForm() {
             type="text"
             className="mt-1 p-2 rounded border border-gray-300"
             value={producto}
-            onChange={(e) => setProducto(e.target.value)}
+            onChange={(e) => setProducto(e.target.value.replace(/[<>]/g, ""))}
             name="producto"
             placeholder="¿Sobre qué producto o servicio consultas?"
             autoComplete="off"
+            maxLength={100}
           />
         </label>
         <label className="flex flex-col font-semibold">
@@ -88,9 +163,11 @@ export default function ContactForm() {
           <textarea
             className="mt-1 p-2 rounded border border-gray-300"
             value={mensaje}
-            onChange={(e) => setMensaje(e.target.value)}
+            onChange={(e) => setMensaje(e.target.value.replace(/[<>]/g, ""))}
             required
             rows={4}
+            maxLength={1000}
+            minLength={10}
           />
         </label>
         {error && <p className="text-red-600">{error}</p>}
@@ -100,8 +177,9 @@ export default function ContactForm() {
         <button
           type="submit"
           className="bg-pink-700 text-white px-4 py-2 rounded hover:bg-pink-800 transition font-bold"
+          disabled={enviando}
         >
-          Enviar
+          {enviando ? "Enviando..." : "Enviar"}
         </button>
       </form>
     </section>
