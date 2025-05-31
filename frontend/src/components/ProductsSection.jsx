@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 // Tarjeta reutilizable para producto o servicio
 function ProductCard({ image, title, description, onContact }) {
   return (
-    <div className="bg-white rounded-xl shadow-md p-4 flex flex-col items-center max-w-xs">
+    <div className="bg-white rounded-xl shadow-md p-4 flex flex-col items-center max-w-xs h-full min-h-[420px]">
       <img
         src={image}
         alt={title}
@@ -12,13 +12,15 @@ function ProductCard({ image, title, description, onContact }) {
       />
       <h3 className="text-xl font-bold text-pink-700 mb-2">{title}</h3>
       <p className="text-gray-700 mb-4 text-center">{description}</p>
-      <button
-        className="bg-pink-700 text-white px-4 py-2 rounded hover:bg-pink-800 transition"
-        onClick={onContact}
-        type="button"
-      >
-        Contáctanos
-      </button>
+      <div className="mt-auto w-full flex justify-center">
+        <button
+          className="bg-pink-700 text-white px-4 py-2 rounded hover:bg-pink-800 transition"
+          onClick={onContact}
+          type="button"
+        >
+          Contáctanos
+        </button>
+      </div>
     </div>
   );
 }
@@ -66,7 +68,7 @@ export default function ProductsSection() {
         <div className="text-red-600 text-center my-8">{error}</div>
       ) : (
         <>
-          <div className="flex flex-wrap justify-center gap-6 mb-10">
+          <div className="flex flex-wrap justify-center gap-6 mb-10 items-stretch">
             {productos.length === 0 ? (
               <p className="text-gray-700">No hay productos disponibles.</p>
             ) : (
@@ -84,7 +86,7 @@ export default function ProductsSection() {
           <h3 className="text-2xl font-bold text-center text-pink-700 mb-6">
             Servicios
           </h3>
-          <div className="flex flex-wrap justify-center gap-6">
+          <div className="flex flex-wrap justify-center gap-6 items-stretch">
             {servicios.length === 0 ? (
               <p className="text-gray-700">No hay servicios disponibles.</p>
             ) : (
