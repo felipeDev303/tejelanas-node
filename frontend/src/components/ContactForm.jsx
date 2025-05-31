@@ -36,7 +36,10 @@ export default function ContactForm() {
   }
 
   return (
-    <section className="max-w-lg mx-auto my-12 p-8 bg-white/80 rounded-xl shadow-lg">
+    <section
+      id="contacto"
+      className="max-w-lg mx-auto my-12 p-8 bg-white/80 rounded-xl shadow-lg"
+    >
       <h2 className="text-3xl font-bold text-pink-700 mb-6 text-center">
         Contáctanos
       </h2>

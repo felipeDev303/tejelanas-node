@@ -58,9 +58,9 @@ export default function ProductsSection() {
   }
 
   return (
-    <section className="container mx-auto py-8">
+    <section id="productos" className="container mx-auto py-8">
       <h2 className="text-3xl font-bold text-center text-pink-700 mb-8">
-        Nuestros Productos y Servicios
+        Nuestros Productos
       </h2>
       {loading ? (
         <p className="text-gray-700 text-center">Cargando...</p>
@@ -83,8 +83,8 @@ export default function ProductsSection() {
               ))
             )}
           </div>
-          <h3 className="text-2xl font-bold text-center text-pink-700 mb-6">
-            Servicios
+          <h3 className="text-3xl font-bold text-center text-pink-700 mb-6">
+            Nuestros Talleres
           </h3>
           <div className="flex flex-wrap justify-center gap-6 items-stretch">
             {servicios.length === 0 ? (
