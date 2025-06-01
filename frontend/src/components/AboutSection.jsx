@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { fetchFromExternalApi } from "../lib/apiClient";
 
 export default function AboutSection() {
   const [about, setAbout] = useState("");
@@ -10,9 +9,20 @@ export default function AboutSection() {
     const controller = new AbortController();
     setLoading(true);
 
-    fetchFromExternalApi("/about-us/", { signal: controller.signal })
-      .then((data) => {
-        setAbout(data.content || data.data || "");
+    fetch("/api/about", { signal: controller.signal })
+      .then(async (res) => {
+        if (!res.ok) {
+          const errorResponse = await res.json().catch(() => null);
+          throw new Error(
+            errorResponse?.detail ||
+              errorResponse?.message ||
+              `Error ${res.status} al obtener datos de /api/about`
+          );
+        }
+        return res.json();
+      })
+      .then((dataFromServer) => {
+        setAbout(dataFromServer.data || "");
         setError("");
       })
       .catch((err) => {

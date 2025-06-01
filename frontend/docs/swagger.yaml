@@ -1,0 +1,218 @@
+openapi: 3.0.3
+info:
+  title: API Intermediaria de Tejelanas Vivi (Astro)
+  description: |-
+    API interna del proyecto Tejelanas Vivi construida con Astro.
+    Actúa como un intermediario (proxy) para consumir la API externa de Tejelanas Vivi
+    de forma segura y potencialmente transformar o cachear datos.
+  version: v1.0.0
+  contact:
+    name: Tu Nombre / Equipo de Desarrollo
+    email: tu_email@example.com
+
+servers:
+  - url: http://localhost:4321
+    description: Servidor de Desarrollo Local Astro
+  - url: https://tu-dominio-de-produccion.com
+    description: Servidor de Producción
+
+tags:
+  - name: General
+    description: Endpoints para obtener información general del sitio
+  - name: Catalogo
+    description: Endpoints relacionados con productos y servicios
+
+components:
+  schemas:
+    AboutUsAstroResponse:
+      type: object
+      properties:
+        data:
+          type: string
+          description: "Texto descriptivo sobre Tejelanas Vivi. Nota: La API externa devuelve el texto con comillas dobles escapadas."
+          example: "\"Tejelanas Vivi\" es un proyecto que celebra la belleza y la versatilidad de las fibras naturales..."
+    ProductoItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nombre:
+          type: string
+          example: "Falda a Crochet"
+        descripcion:
+          type: string
+          example: "Transforma tu estilo con esta hermosa falda tejida a crochet..."
+        tallas:
+          type: array
+          items:
+            type: string
+          example: ["S", "M", "L", "XL"]
+        colores:
+          type: array
+          items:
+            type: string
+          example: ["crema", "verde esmeralda"]
+        precio:
+          type: integer
+          example: 9990
+        imgs:
+          type: array
+          items:
+            type: string
+            format: url
+          example: ["https://www.clinicatecnologica.cl/ipss/tejelanasVivi/imgs/productos/faldaCrochet1.png"]
+    ServicioItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nombre:
+          type: string
+          example: "Taller Telar Decorativo Junio 2025"
+        ubicacion:
+          type: string
+          example: "Mall Vivo, Avda La florida Rojas Magallanes"
+        cupos:
+          type: integer
+          example: 50
+        fecha:
+          type: string
+          example: "08/06/2025"
+        imgs:
+          type: array
+          items:
+            type: string
+            format: url
+          example: ["https://www.clinicatecnologica.cl/ipss/tejelanasVivi/imgs/servicios/taller1.png"]
+    ProductsServicesAstroResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            productos:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductoItem'
+            servicios:
+              type: array
+              items:
+                $ref: '#/components/schemas/ServicioItem'
+    FaqItemDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        titulo:
+          type: string
+          example: "¿Quién está detrás de Tejelanas Vivi?"
+        respuesta:
+          type: string
+          example: "Viviana Méndez Orrego, dueña de Tejelanas Vivi desde el año 2011."
+        activo:
+          type: boolean
+          example: true
+    FaqAstroResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FaqItemDetail'
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "No se pudo obtener la información."
+        detail:
+          type: string
+          example: "Error 502 desde la API externa: Servicio no disponible"
+
+paths:
+  /api/about:
+    get:
+      tags:
+        - General
+      summary: Obtener información "Sobre Nosotros"
+      description: Recupera el contenido de la sección "Sobre Nosotros" a través del proxy API de Astro.
+      operationId: getAstroAboutUs
+      responses:
+        '200':
+          description: Información "Sobre Nosotros" obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AboutUsAstroResponse'
+        '502':
+          description: Error al contactar la API externa (Bad Gateway).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor Astro.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/products-services:
+    get:
+      tags:
+        - Catalogo
+      summary: Obtener Productos y Servicios
+      description: Recupera la lista de productos y servicios a través del proxy API de Astro.
+      operationId: getAstroProductsServices
+      responses:
+        '200':
+          description: Lista de productos y servicios obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductsServicesAstroResponse'
+        '502':
+          description: Error al contactar la API externa.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor Astro.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/faq:
+    get:
+      tags:
+        - General
+      summary: Obtener Preguntas Frecuentes
+      description: Recupera la lista de FAQs a través del proxy API de Astro.
+      operationId: getAstroFaq
+      responses:
+        '200':
+          description: Lista de FAQs obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FaqAstroResponse'
+        '502':
+          description: Error al contactar la API externa.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor Astro.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

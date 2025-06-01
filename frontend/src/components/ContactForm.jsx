@@ -95,7 +95,44 @@ export default function ContactForm() {
     const safeMensaje = escapeInput(mensaje);
     const safeProducto = escapeInput(producto);
 
-    // Aquí iría el fetch al backend, usando los valores escapados
+    // Envío real al backend (reemplaza el setTimeout)
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nombre: safeNombre,
+        email: safeEmail,
+        producto: safeProducto,
+        mensaje: safeMensaje,
+        // honeypot: "", // opcional, para anti-spam
+      }),
+    })
+      .then(async res => {
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ message: `Error del servidor: ${res.status}` }));
+          throw new Error(errorData.message || `Error ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        setEnviando(false);
+        setEnviado(true);
+        setNombre("");
+        setEmail("");
+        setMensaje("");
+        // No limpiamos producto para mantener el valor de interés
+        formRef.current?.reset();
+      })
+      .catch(err => {
+        setEnviando(false);
+        setError("Error al enviar el mensaje: " + err.message);
+        setEnviado(false);
+      });
+
+    // Si quieres mantener el envío simulado, comenta el bloque fetch y descomenta el setTimeout:
+    /*
     setTimeout(() => {
       setEnviando(false);
       setEnviado(true);
@@ -105,6 +142,7 @@ export default function ContactForm() {
       // No limpiamos producto para mantener el valor de interés
       formRef.current?.reset();
     }, 1000);
+    */
   }
 
   return (

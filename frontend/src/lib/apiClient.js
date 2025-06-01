@@ -1,5 +1,5 @@
-const API_BASE_URL = import.meta.env.PUBLIC_EXTERNAL_API_URL_BASE;
-const API_TOKEN = import.meta.env.PUBLIC_EXTERNAL_API_TOKEN;
+const API_BASE_URL = import.meta.env.EXTERNAL_API_URL_BASE; // <--- sin PUBLIC_
+const API_TOKEN = import.meta.env.EXTERNAL_API_TOKEN; // <--- sin PUBLIC_
 const DEFAULT_TIMEOUT_MS = 10000; // 10 segundos
 
 /**
@@ -12,7 +12,7 @@ const DEFAULT_TIMEOUT_MS = 10000; // 10 segundos
 export async function fetchFromExternalApi(endpoint, options = {}) {
   // Log de depuración para variables de entorno
   if (import.meta.env.DEV) {
-    console.log("[apiClient] PUBLIC_EXTERNAL_API_URL_BASE:", API_BASE_URL);
+    console.log("[apiClient] EXTERNAL_API_URL_BASE:", API_BASE_URL);
     console.log("[apiClient] PUBLIC_EXTERNAL_API_TOKEN presente:", !!API_TOKEN);
     console.log("[apiClient] endpoint recibido:", endpoint);
   }
