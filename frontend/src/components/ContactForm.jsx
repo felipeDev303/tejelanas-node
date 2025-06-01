@@ -49,7 +49,10 @@ export default function ContactForm() {
 
     return () => {
       window.removeEventListener("popstate", syncProductoFromURL);
-      window.removeEventListener("producto-interes-cambiado", syncProductoFromURL);
+      window.removeEventListener(
+        "producto-interes-cambiado",
+        syncProductoFromURL
+      );
     };
   }, []);
 

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 
-// Utilidad para convertir URLs y números de WhatsApp en enlaces clicables
+// Convierte las URL y números de WhatsApp en enlaces clicables
 function parseRespuesta(respuesta) {
   if (!respuesta) return null;
 
-  // Detecta URLs
+  // Detecta las URLs
   let parsed = respuesta.replace(
     /(https?:\/\/[^\s]+)/g,
     (url) =>
       `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-pink-700 underline break-all">${url}</a>`
   );
 
-  // Detecta números de WhatsApp chilenos (+56 9 ...)
+  // Para detectar números de WhatsApp chilenos (+56 9 ...)
   parsed = parsed.replace(/(\+56\s?9\s?\d{4}\s?\d{4})/g, (match) => {
     const numero = match.replace(/\D/g, "");
     return `<a href="https://wa.me/${numero}" target="_blank" rel="noopener noreferrer" class="text-green-700 underline">${match}</a>`;
