@@ -32,12 +32,13 @@ export default function ProductsSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
     setLoading(true);
-    fetch("/api/products-services")
+    fetch("/api/products-services", { signal: controller.signal })
       .then(async (res) => {
         if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(errorText);
+          const errorJson = await res.json().catch(() => ({}));
+          throw new Error(errorJson.message || "Error desconocido");
         }
         return res.json();
       })
@@ -48,9 +49,12 @@ export default function ProductsSection() {
         setError("");
       })
       .catch((err) => {
-        setError("No se pudieron cargar los productos: " + err.message);
+        if (err.name !== "AbortError") {
+          setError("No se pudieron cargar los productos: " + err.message);
+        }
       })
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   function handleContact(nombre) {
@@ -60,7 +64,7 @@ export default function ProductsSection() {
     url.hash = "contacto";
     window.history.pushState({}, "", url);
 
-    // Scroll suave al formulario de contacto
+    // Scroll al formulario de contacto
     const contactoSection = document.getElementById("contacto");
     if (contactoSection) {
       contactoSection.scrollIntoView({ behavior: "smooth" });

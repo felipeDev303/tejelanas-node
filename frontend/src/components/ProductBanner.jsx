@@ -1,78 +1,40 @@
 import React, { useEffect, useState } from "react";
 
-export default function ProductBanner(props) {
+export default function ProductBanner() {
   const [products, setProducts] = useState([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Mostrar todas las variables de entorno disponibles para depuración
-    console.log("import.meta.env:", import.meta.env);
-
-    const apiUrl = import.meta.env.VITE_EXTERNAL_API_URL_BASE;
-    const authToken = import.meta.env.VITE_EXTERNAL_API_TOKEN;
-
-    console.log("VITE_EXTERNAL_API_URL_BASE:", apiUrl);
-    console.log("VITE_EXTERNAL_API_TOKEN:", authToken);
-
-    if (!apiUrl || !authToken) {
-      const errMsg =
-        "Variables de entorno VITE_EXTERNAL_API_URL_BASE o VITE_EXTERNAL_API_TOKEN no definidas. Revisa tu archivo .env y reinicia el servidor de desarrollo.";
-      console.error(errMsg);
-      setError(errMsg);
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
-    const fullApiUrl = `${apiUrl}/products-services/`;
-    console.log("Haciendo fetch a:", fullApiUrl);
-
-    fetch(fullApiUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
-    })
+    fetch("/api/product-banner")
       .then(async (res) => {
-        console.log("Respuesta recibida, Status:", res.status);
         if (!res.ok) {
-          const errorText = await res.text();
-          console.error("Error en la respuesta de la API:", errorText);
-          let errorJson;
-          try {
-            errorJson = JSON.parse(errorText);
-          } catch (e) {}
+          const errorJson = await res.json().catch(() => ({}));
           throw new Error(
-            `Error ${res.status}: ${
-              errorJson?.detail || errorJson?.message || res.statusText
-            }. Raw: ${errorText.substring(0, 200)}`
+            errorJson.message ||
+              "No se pudieron cargar los productos del banner."
           );
         }
         return res.json();
       })
       .then((data) => {
-        console.log("Datos recibidos:", data);
-        // Ajusta según la estructura real de tu API
-        const productos = Array.isArray(data?.data?.productos)
-          ? data.data.productos
-          : [];
-        const servicios = Array.isArray(data?.data?.servicios)
-          ? data.data.servicios
-          : [];
+        const d = data.data || {};
+        const productos = Array.isArray(d.productos) ? d.productos : [];
+        const servicios = Array.isArray(d.servicios) ? d.servicios : [];
         setProducts([...productos, ...servicios]);
         setError("");
       })
       .catch((err) => {
-        console.error("Catch - Error al cargar productos:", err);
-        setError("Error al cargar productos: " + err.message);
+        if (import.meta.env.DEV) {
+          // Solo en desarrollo, muestra el error real en consola
+          console.error("Error real al cargar productos del banner:", err);
+        }
+        setError("No se pudieron cargar los productos del banner.");
         setProducts([]);
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   }, []);
 
   function prev() {
@@ -102,7 +64,7 @@ export default function ProductBanner(props) {
 
   return (
     <div
-      className="relative w-full max-w-xl mx-auto overflow-hidden bg-gray-100 min-h-[250px]"
+      className="relative w-full max-w-2xl mx-auto overflow-hidden bg-gradient-to-r from-pink-200 via-white to-pink-100 rounded-xl shadow-lg min-h-[250px] flex items-center justify-center"
       role="region"
       aria-label="Carrusel de productos"
       tabIndex={0}
@@ -116,60 +78,59 @@ export default function ProductBanner(props) {
           No hay productos para mostrar.
         </div>
       ) : (
+        <img
+          src={products[current]?.imgs?.[0] || "/placeholder.jpg"}
+          alt={products[current]?.nombre || "Producto"}
+          className="w-full max-h-80 object-contain rounded-xl shadow-md transition-all duration-500 bg-white"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/placeholder.jpg";
+          }}
+        />
+      )}
+
+      {/* Controles modernos tipo banner */}
+      {products.length > 1 && (
         <>
-          <img
-            src={products[current]?.imgs?.[0] || "/images/placeholder.png"}
-            alt={products[current]?.nombre || "Producto"}
-            className="w-full h-auto block rounded-lg object-contain min-h-[200px] bg-white"
-            role="group"
-            aria-roledescription="slide"
-            aria-label={`Imagen ${current + 1} de ${products.length}`}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = "/images/placeholder.png";
-            }}
-          />
-          <div className="text-center mt-2 font-semibold">
-            {products[current]?.nombre || "Producto"}
+          <button
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-pink-700 rounded-full w-10 h-10 flex items-center justify-center shadow transition disabled:opacity-50"
+            aria-label="Anterior"
+            onClick={prev}
+            disabled={current === 0 || loading || products.length === 0}
+            tabIndex={0}
+          >
+            &#8592;
+          </button>
+          <button
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-pink-700 rounded-full w-10 h-10 flex items-center justify-center shadow transition disabled:opacity-50"
+            aria-label="Siguiente"
+            onClick={next}
+            disabled={
+              current === products.length - 1 ||
+              loading ||
+              products.length === 0
+            }
+            tabIndex={0}
+          >
+            &#8594;
+          </button>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            {products.map((_, idx) => (
+              <button
+                key={idx}
+                className={`w-3 h-3 rounded-full border-none cursor-pointer transition-colors ${
+                  current === idx ? "bg-pink-700" : "bg-gray-300"
+                }`}
+                aria-label={`Ir a la imagen ${idx + 1}`}
+                aria-current={current === idx}
+                onClick={() => goTo(idx)}
+                disabled={loading}
+                tabIndex={0}
+              />
+            ))}
           </div>
         </>
       )}
-
-      <div className="flex justify-center gap-4 mt-2">
-        <button
-          className="bg-white border border-gray-300 rounded-full w-10 h-10 text-xl cursor-pointer transition hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="Anterior"
-          onClick={prev}
-          disabled={current === 0 || loading || products.length === 0}
-        >
-          &#8592;
-        </button>
-        <button
-          className="bg-white border border-gray-300 rounded-full w-10 h-10 text-xl cursor-pointer transition hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="Siguiente"
-          onClick={next}
-          disabled={
-            current === products.length - 1 || loading || products.length === 0
-          }
-        >
-          &#8594;
-        </button>
-      </div>
-
-      <div className="flex justify-center gap-2 mt-2">
-        {products.map((product, idx) => (
-          <button
-            key={idx}
-            className={`w-3 h-3 rounded-full border-none cursor-pointer transition-colors ${
-              current === idx ? "bg-blue-600" : "bg-gray-300"
-            }`}
-            aria-label={`Ir a la imagen ${idx + 1}`}
-            aria-current={current === idx}
-            onClick={() => goTo(idx)}
-            disabled={loading}
-          />
-        ))}
-      </div>
     </div>
   );
 }

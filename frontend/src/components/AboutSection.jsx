@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { fetchFromExternalApi } from "../lib/apiClient";
 
 export default function AboutSection() {
   const [about, setAbout] = useState("");
@@ -6,30 +7,23 @@ export default function AboutSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
     setLoading(true);
-    fetch("/api/about")
-      .then(async (res) => {
-        if (!res.ok) {
-          const errorText = await res.text();
-          let errorJson;
-          try {
-            errorJson = JSON.parse(errorText);
-          } catch {}
-          throw new Error(
-            errorJson?.detail || errorJson?.message || res.statusText
-          );
-        }
-        return res.json();
-      })
+
+    fetchFromExternalApi("/about-us/", { signal: controller.signal })
       .then((data) => {
         setAbout(data.content || data.data || "");
         setError("");
       })
       .catch((err) => {
-        setError("No se pudo cargar la información: " + err.message);
-        setAbout("");
+        if (err.name !== "AbortError") {
+          setError("No se pudo cargar la información: " + err.message);
+          setAbout("");
+        }
       })
       .finally(() => setLoading(false));
+
+    return () => controller.abort();
   }, []);
 
   return (
