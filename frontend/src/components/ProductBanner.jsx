@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from "react";
 
-export default function ProductCarousel() {
+export default function ProductBanner(props) {
   const [products, setProducts] = useState([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const apiUrl = import.meta.env.PUBLIC_API_URL;
-    const authToken = import.meta.env.PUBLIC_BEARER_TOKEN;
+    // Mostrar todas las variables de entorno disponibles para depuración
+    console.log("import.meta.env:", import.meta.env);
 
-    console.log("Intentando cargar variables de entorno...");
-    console.log("PUBLIC_API_URL:", apiUrl);
-    console.log("PUBLIC_BEARER_TOKEN:", authToken);
+    const apiUrl = import.meta.env.VITE_EXTERNAL_API_URL_BASE;
+    const authToken = import.meta.env.VITE_EXTERNAL_API_TOKEN;
+
+    console.log("VITE_EXTERNAL_API_URL_BASE:", apiUrl);
+    console.log("VITE_EXTERNAL_API_TOKEN:", authToken);
 
     if (!apiUrl || !authToken) {
       const errMsg =
-        "Variables de entorno PUBLIC_API_URL o PUBLIC_BEARER_TOKEN no definidas. Revisa tu archivo .env y reinicia el servidor de desarrollo.";
+        "Variables de entorno VITE_EXTERNAL_API_URL_BASE o VITE_EXTERNAL_API_TOKEN no definidas. Revisa tu archivo .env y reinicia el servidor de desarrollo.";
       console.error(errMsg);
       setError(errMsg);
       setLoading(false);

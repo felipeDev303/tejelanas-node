@@ -2,14 +2,17 @@ import { fetchFromExternalApi } from "../../lib/apiClient";
 
 export async function GET(request) {
   try {
-    const data = await fetchFromExternalApi("/about-us/");
+    const data = await fetchFromExternalApi("/products-banner/");
     return Response.json(data);
   } catch (error) {
-    console.error("[/api/about] Error procesando la solicitud:", error.message);
+    console.error(
+      "[/api/product-banner] Error procesando la solicitud:",
+      error.message
+    );
     return Response.json(
       {
         success: false,
-        message: "No se pudo obtener la información de 'Sobre Nosotros'.",
+        message: "No se pudieron obtener los productos en el banner.",
         detail: error.message,
       },
       { status: 502 }

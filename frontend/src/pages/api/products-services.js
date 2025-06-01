@@ -1,33 +1,21 @@
-export async function GET() {
-  const response = await fetch(
-    "https://www.clinicatecnologica.cl/ipss/tejelanasVivi/api/v1/products-services/",
-    {
-      headers: {
-        Authorization: "Bearer ipss.get",
-        Accept: "application/json",
+import { fetchFromExternalApi } from "../../lib/apiClient";
+
+export async function GET(request) {
+  try {
+    const data = await fetchFromExternalApi("/products-services/");
+    return Response.json(data);
+  } catch (error) {
+    console.error(
+      "[/api/products-services] Error procesando la solicitud:",
+      error.message
+    );
+    return Response.json(
+      {
+        success: false,
+        message: "No se pudieron obtener los Productos y Servicios.",
+        detail: error.message,
       },
-    }
-  );
-  if (!response.ok) {
-    const errorText = await response.text();
-    return new Response(errorText, {
-      status: response.status,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+      { status: 502 }
+    );
   }
-  let data;
-  const contentType = response.headers.get("content-type") || "";
-  if (contentType.includes("application/json")) {
-    data = await response.json();
-  } else {
-    const text = await response.text();
-    data = { data: text };
-  }
-  return new Response(JSON.stringify(data), {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
 }
