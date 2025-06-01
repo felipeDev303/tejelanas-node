@@ -153,9 +153,12 @@ Esto generará los archivos optimizados (ej. en dist/) o preparará la aplicaci�
 
 ## 🔮 Próximas Features / Evolución del Backend
 
-Si bien los endpoints API de Astro sirven bien como un BFF inicial, el proyecto "Tejelanas Vivi" tiene el potencial de crecer y requerir funcionalidades más avanzadas que justificarían un backend dedicado.
+Los endpoints API de Astro son un excelente BFF inicial. Para funcionalidades más avanzadas, se planea desarrollar un backend dedicado en Node.js con Express en la carpeta backend/.
 
-### Objetivos de un Backend Propio (Node.js + Express)
+**Posible integración de CMS Headless:**
+También se considera la integración de un CMS headless (como Strapi, Sanity, Contentful, Directus, WordPress Headless, etc.) para facilitar la gestión de contenido dinámico (productos, banners, FAQs, blogs, etc.) desde una interfaz amigable, sin necesidad de modificar el código fuente. Esto permitiría a usuarios no técnicos administrar el contenido del sitio de forma sencilla y segura.
+
+Objetivos del Backend Propio (Node.js + Express)
 
 Un backend propio en la carpeta backend/ (utilizando Node.js, Express, y potencialmente una base de datos) permitiría:
 
