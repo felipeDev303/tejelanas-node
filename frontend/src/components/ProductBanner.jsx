@@ -27,10 +27,6 @@ export default function ProductBanner() {
         setError("");
       })
       .catch((err) => {
-        if (import.meta.env.DEV) {
-          // Solo en desarrollo, muestra el error real en consola
-          console.error("Error real al cargar productos del banner:", err);
-        }
         setError("No se pudieron cargar los productos del banner.");
         setProducts([]);
       })
