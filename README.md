@@ -177,6 +177,8 @@ Un backend propio en la carpeta backend/ (utilizando Node.js, Express, y potenci
   - Capacidad de optimizar y escalar el backend de forma independiente al frontend.
 - **API Pública (Opcional):**
   - Si en el futuro se desea exponer una API para integraciones con terceros.
+- **CMS Headless (Opcional):**
+  - Considerar la integración de un CMS headless (como WordPress etc.) para facilitar la gestión de contenido dinámico (productos, banners, FAQs, blogs, etc.) por parte del equipo sin necesidad de modificar el código fuente.
 
 ### Pasos Potenciales para la Construcción del Backend
 
