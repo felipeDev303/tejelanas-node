@@ -1,7 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function HeaderReact() {
   const [open, setOpen] = useState(false);
+
+  // Evita el scroll del body cuando el menú móvil está abierto
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
     <header className="w-full max-w-[1440px] mx-auto px-6 py-3 bg-white/80 backdrop-blur-md shadow-lg rounded-b-2xl flex items-center justify-between sticky top-0 z-50 transition-all border-b border-pink-100">
@@ -47,23 +59,41 @@ export default function HeaderReact() {
       </nav>
       <button
         className="md:hidden flex items-center justify-center w-12 h-12 rounded-lg hover:bg-pink-50 transition"
-        aria-label="Abrir menú"
+        aria-label={open ? "Cerrar menú" : "Abrir menú"}
         type="button"
         onClick={() => setOpen((v) => !v)}
       >
-        <svg
-          className="w-7 h-7 text-pink-700"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
+        {open ? (
+          // Icono X
+          <svg
+            className="w-7 h-7 text-pink-700"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        ) : (
+          // Icono hamburguesa
+          <svg
+            className="w-7 h-7 text-pink-700"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        )}
       </button>
       {open && (
         <nav className="absolute top-full left-0 w-full bg-white/95 shadow-lg rounded-b-2xl flex flex-col items-center gap-4 py-6 md:hidden animate-fade-in z-50">

@@ -27,7 +27,7 @@ export default function ProductBanner() {
         setError("");
       })
       .catch((err) => {
-        setError("No se pudieron cargar los productos del banner.");
+        setError("Error al cargar banner: " + (err.message || "Error desconocido"));
         setProducts([]);
       })
       .finally(() => setLoading(false));
