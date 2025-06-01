@@ -68,8 +68,8 @@ Si los requisitos cambian y el consumo de la API externa ya no es necesario, est
 
 #### Prerrequisitos
 
-- [Node.js](https://nodejs.org/) (versión LTS recomendada, ej. 18.x o superior)
-- [npm](https://www.npmjs.com/) o [yarn](https://yarnpkg.com/)
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/)
 
 #### Instalación
 
@@ -84,8 +84,6 @@ Si los requisitos cambian y el consumo de la API externa ya no es necesario, est
 
    ```bash
    npm install
-   # o
-   yarn install
    ```
 
 3. **Configura las variables de entorno:**
@@ -105,8 +103,6 @@ Si los requisitos cambian y el consumo de la API externa ya no es necesario, est
 
 ```bash
 npm run dev
-# o
-yarn dev
 ```
 
 El servidor de desarrollo Astro se iniciará, generalmente en http://localhost:4321.
@@ -115,33 +111,9 @@ El servidor de desarrollo Astro se iniciará, generalmente en http://localhost:4
 
 ```bash
 npm run build
-# o
-yarn build
 ```
 
 Esto generará los archivos optimizados (ej. en dist/) o preparará la aplicación para el modo SSR, según la configuración de tu adaptador en astro.config.mjs.
-
-## 📂 Estructura Detallada del Proyecto Frontend
-
-```
-frontend/
-├── public/                # Assets estáticos (imágenes, favicons, fonts)
-├── src/
-│   ├── components/        # Componentes React y Astro reutilizables
-│   ├── layouts/           # Layouts de Astro (.astro)
-│   ├── lib/               # Código de utilidad, helpers (ej. apiClient.js)
-│   ├── pages/             # Rutas y páginas de Astro (.astro) y Endpoints API (.js, .ts)
-│   │   ├── api/           # Endpoints API de Astro (backend intermediario)
-│   ├── styles/            # Estilos globales CSS o Tailwind base (ej. global.css)
-│   └── env.d.ts           # (Si usas TypeScript) Definiciones de tipo para variables de entorno
-├── astro.config.mjs       # Configuración de Astro
-├── package.json
-├── tailwind.config.js     # Configuración de Tailwind CSS
-├── tsconfig.json          # (Si usas TypeScript) Configuración de TypeScript
-├── .env                   # (No subir a Git) Variables de entorno locales
-├── .env.example           # Ejemplo de variables de entorno
-└── README.md              # Este mismo archivo
-```
 
 ## 📜 Guía de Buenas Prácticas y Convenciones (Frontend)
 
