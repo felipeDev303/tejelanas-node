@@ -7,13 +7,13 @@ info:
     de forma segura y potencialmente transformar o cachear datos.
   version: v1.0.0
   contact:
-    name: Tu Nombre / Equipo de Desarrollo
-    email: tu_email@example.com
+    name: Tejelanas Vivi - Equipo de Desarrollo
+    email: contacto@tejelanasvivi.cl
 
 servers:
   - url: http://localhost:4321
     description: Servidor de Desarrollo Local Astro
-  - url: https://tu-dominio-de-produccion.com
+  - url: https://tejelanasvivi.cl
     description: Servidor de Producción
 
 tags:
@@ -30,7 +30,7 @@ components:
         data:
           type: string
           description: "Texto descriptivo sobre Tejelanas Vivi. Nota: La API externa devuelve el texto con comillas dobles escapadas."
-          example: "\"Tejelanas Vivi\" es un proyecto que celebra la belleza y la versatilidad de las fibras naturales..."
+          example: '"Tejelanas Vivi" es un proyecto que celebra la belleza y la versatilidad de las fibras naturales...'
     ProductoItem:
       type: object
       properties:
@@ -54,14 +54,18 @@ components:
             type: string
           example: ["crema", "verde esmeralda"]
         precio:
-          type: integer
-          example: 9990
+          type: number
+          format: float
+          example: 9990.50
         imgs:
           type: array
           items:
             type: string
             format: url
-          example: ["https://www.clinicatecnologica.cl/ipss/tejelanasVivi/imgs/productos/faldaCrochet1.png"]
+          example:
+            [
+              "https://www.clinicatecnologica.cl/ipss/tejelanasVivi/imgs/productos/faldaCrochet1.png",
+            ]
     ServicioItem:
       type: object
       properties:
@@ -79,13 +83,17 @@ components:
           example: 50
         fecha:
           type: string
+          description: "Fecha del servicio en formato DD/MM/YYYY. Ejemplo: 08/06/2025"
           example: "08/06/2025"
         imgs:
           type: array
           items:
             type: string
             format: url
-          example: ["https://www.clinicatecnologica.cl/ipss/tejelanasVivi/imgs/servicios/taller1.png"]
+          example:
+            [
+              "https://www.clinicatecnologica.cl/ipss/tejelanasVivi/imgs/servicios/taller1.png",
+            ]
     ProductsServicesAstroResponse:
       type: object
       properties:
@@ -95,11 +103,11 @@ components:
             productos:
               type: array
               items:
-                $ref: '#/components/schemas/ProductoItem'
+                $ref: "#/components/schemas/ProductoItem"
             servicios:
               type: array
               items:
-                $ref: '#/components/schemas/ServicioItem'
+                $ref: "#/components/schemas/ServicioItem"
     FaqItemDetail:
       type: object
       properties:
@@ -121,7 +129,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/FaqItemDetail'
+            $ref: "#/components/schemas/FaqItemDetail"
     ErrorResponse:
       type: object
       properties:
@@ -144,24 +152,32 @@ paths:
       description: Recupera el contenido de la sección "Sobre Nosotros" a través del proxy API de Astro.
       operationId: getAstroAboutUs
       responses:
-        '200':
+        "200":
           description: Información "Sobre Nosotros" obtenida exitosamente.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AboutUsAstroResponse'
-        '502':
+                $ref: "#/components/schemas/AboutUsAstroResponse"
+        "502":
           description: Error al contactar la API externa (Bad Gateway).
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+            text/plain:
+              schema:
+                type: string
+                example: "Gateway Timeout"
+        "500":
           description: Error interno del servidor Astro.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
+            text/plain:
+              schema:
+                type: string
+                example: "Internal Server Error"
 
   /api/products-services:
     get:
@@ -171,24 +187,32 @@ paths:
       description: Recupera la lista de productos y servicios a través del proxy API de Astro.
       operationId: getAstroProductsServices
       responses:
-        '200':
+        "200":
           description: Lista de productos y servicios obtenida exitosamente.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductsServicesAstroResponse'
-        '502':
+                $ref: "#/components/schemas/ProductsServicesAstroResponse"
+        "502":
           description: Error al contactar la API externa.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+            text/plain:
+              schema:
+                type: string
+                example: "Gateway Timeout"
+        "500":
           description: Error interno del servidor Astro.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
+            text/plain:
+              schema:
+                type: string
+                example: "Internal Server Error"
 
   /api/faq:
     get:
@@ -198,21 +222,29 @@ paths:
       description: Recupera la lista de FAQs a través del proxy API de Astro.
       operationId: getAstroFaq
       responses:
-        '200':
+        "200":
           description: Lista de FAQs obtenida exitosamente.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FaqAstroResponse'
-        '502':
+                $ref: "#/components/schemas/FaqAstroResponse"
+        "502":
           description: Error al contactar la API externa.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+            text/plain:
+              schema:
+                type: string
+                example: "Gateway Timeout"
+        "500":
           description: Error interno del servidor Astro.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
+            text/plain:
+              schema:
+                type: string
+                example: "Internal Server Error"
